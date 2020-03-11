@@ -1,0 +1,792 @@
+﻿@model PaymentTempalte.Models.Payments
+@using PaymentTempalte.Helpers;
+@using System.Globalization;
+@{
+    Layout = null;
+    string str = "";
+    var cardValue = "1234 5678 1234 5678";
+
+}
+<!DOCTYPE html>
+<html    @(Model.Lang=="ar"? "lang=ar":"lang=en") >
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="description" content="check-out page ">
+
+    <link rel="stylesheet" type="text/css" href="~/Content/arabic/vendor/bootstrap/css/bootstrap-arabic.css">
+
+    <link rel="stylesheet" type="text/css" href="~/Content/arabic/vendor/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="~/Content/arabic/css/style.css">
+    <link rel="stylesheet" href="~/Content/arabic/css/fontello.css" />
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+    <link rel="icon" href="~/Content/arabic/images/logo-ar-s.png" type="image/png">
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <title>
+
+        Check Out- @Helper.FormatNumber(@Model.PaymentAmount) @Model.CurrencyCode By Fatora
+    </title>
+</head>
+
+
+
+<body @(Model.Lang == "ar" ? "dir=rtl" : "dir=ltr")>
+    <!-- FORM-->
+    
+        <div class="checkout-sec" style="background-image: url(/med/bg/MAKT12.png);">
+        
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 col-md-offset-3">
+                        <div id="shipping-info">
+                            <div class="company-datails">
+
+                            <div id="company-logo">
+
+                            <!-- @*<img src="images/logo.png">*@ -->
+                            @*<img src="https://maktapp.credit/Content/arabic/images/logo.png">*@
+                                <img src="~/med/logo/MAKT12.png">
+                            </div>
+                            <div class="company-namee">
+                                @ViewBag.MerchantName
+                                @*محل زهور الربيع*@
+                            </div>
+                                </div>
+                            <p class="trans-num">
+                                @if (!string.IsNullOrEmpty(Model.orderID) && Model.orderID.Contains(","))
+                                {
+                                    string[] orderID = Model.orderID.Split(',');
+                                    str = string.Format("{0}{1}", "#", orderID[orderID.Length - 1]);
+                                    @str
+                                }
+                                else
+                                {
+                                    str = string.Format("{0}{1}", "#", Model.orderID);
+                                    @str
+
+                                }
+                            </p>
+                            @if (ViewBag.Test == true)
+                            {
+                                <p class="experimental">
+                                    @*تجريبي*@
+                                    @PaymentTempalte.Resourse.Paymentpage.Test
+
+                                </p>
+                            }
+                            <div class="clearfix"></div>
+                            <div class="price-tag">
+                                <span class="main-p"> @PaymentTempalte.Helpers.Helper.FormatNumber(Model.PaymentAmount) </span>
+                                <span class="currency">@Model.CurrencyCode </span>
+
+                            </div>
+                            <div class="selection">
+                                <h5>
+                                    @PaymentTempalte.Resourse.Paymentpage.CardType :
+                                </h5>
+                                <div class="radio">
+                                    <input id="radio-1" name="radio" type="radio" value="1" checked>
+                                    <label for="radio-1" class="radio-label">
+                                        <span>Credit Card</span>
+                                        <div class="img-cont">
+                                            <img src="~/Content/arabic/images/visa-mastercard-logos.png"
+                                                 alt="credit">
+
+                                        </div>
+                                    </label>
+                                </div>
+
+
+                                <div class="radio">
+                                    <input id="radio-2" name="radio" type="radio" value="2">
+                                    <label for="radio-2" class="radio-label">
+                                        <span>Debit Card</span>
+                                        <div class="img-cont">
+                                            <img src="~/Content/arabic/images/rendition.png"
+                                                 alt="Debit">
+
+                                        </div>
+
+                                    </label>
+                                </div>
+
+                            </div>
+
+                            <form class="checkout" id="checkoutForm">
+                                <p class="debit-card-desc">
+
+                                    @PaymentTempalte.Resourse.Paymentpage.DepitCardMessage
+
+
+                                </p>
+                                <div class="hide-this">
+                                    <div class="form-group">
+                                        <label>
+                                            @PaymentTempalte.Resourse.Paymentpage.CardNumber :
+                                        </label>
+                                        <div class="input-group">
+                                           
+                                            <span class="input-group-addon"><i class="fa fa-credit-card"></i></span>
+
+                                            <input class="form-control required checkout-input" id="Card" data-val="true"
+                                                   data-val-required='@PaymentTempalte.Resourse.Paymentpage.CardNumberMessage' name="Card"
+                                                   placeholder="#### #### #### ####" rows="3" type="text"
+                                                   onkeypress="return isNumber(event)"
+                                                   @*value='@(ViewBag.Test?"1234 5678 1234 5678":"")'*@
+                                                   @*@(ViewBag.Test ? "disabled='disabled'" : "")*@
+                                                   maxlength="19"
+                                                   pattern="[0-9]4[0-9]4[0-9]4[0-9]4" tabindex=1>
+
+                                        </div>
+                                        <span class="field-validation-valid" data-valmsg-for="Card"
+                                              data-valmsg-replace="true"></span>
+                                    </div>
+                                    <div class="row bottom-fields">
+                                        <div class=" col-xs-6 no-padding-left">
+                                            <div class="form-group">
+                                                <label>
+                                                    @PaymentTempalte.Resourse.Paymentpage.ExpiryDate
+                                                </label>
+                                                <div>
+                                                    <div class="input-group half">
+                                                        <div class="input-append date" id="datepicker2">
+                                                            <input class="checkout-input" Id="ExpireMonth" type="number"
+                                                                   name="ExpireMonth"
+                                                                   placeholder="MM" maxlength="2" pattern="[0-9]2-[0-9]4"
+                                                                   data-val-required='@PaymentTempalte.Resourse.Paymentpage.ExpiryDateMessage'
+                                                                   @*@(ViewBag.Test ? "value=02" : "")*@
+                                                                   @*@(ViewBag.Test ? "disabled='disabled'" : "")*@
+                                                                   tabindex=2 onkeypress="return isNumber(event)">
+                                                        </div>
+                                                        <ul class="months-list">
+                                                            <li>1</li>
+                                                            <li>2</li>
+                                                            <li>3</li>
+                                                            <li>4</li>
+                                                            <li>5</li>
+                                                            <li>6</li>
+                                                            <li>7</li>
+                                                            <li>8</li>
+                                                            <li>9</li>
+                                                            <li>10</li>
+                                                            <li>11</li>
+                                                            <li>12</li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="input-group half">
+                                                        @*<span class="input-group-addon"><i class="fa fa-calendar"></i></span>*@
+                                                        <div class="input-append date" id="datepicker">
+                                                            <input class="checkout-input" Id="ExpireYear" type="number" name="ExpireYear" placeholder="yyyy"
+                                                                   @*@(ViewBag.Test ? "value=2022" : "")*@ 
+                                                                   @*@(ViewBag.Test ? "disabled='disabled'" : "")*@
+                                                                   max="4" pattern="[0-9]2-[0-9]4" data-val-required="" tabindex=3 onkeypress="return isNumber(event)">
+                                                        </div>
+
+                                                        <ul class="years-list" id="Years">
+                                                            
+                                                            <li>2020</li>
+                                                            <li>2021</li>
+                                                            <li>2022</li>
+                                                            <li>2023</li>
+                                                            <li>2024</li>
+                                                            <li>2025</li>
+                                                        </ul>
+
+
+                                                    </div>
+                                                </div>
+
+
+                                                <span class="field-validation-valid" data-valmsg-for="ExpireMonth"
+                                                      data-valmsg-replace="true" style="display:inline-block"></span>
+                                                <span class="field-validation-valid" data-valmsg-for="ExpireYear"
+                                                      data-valmsg-replace="true"></span>
+
+                                            </div>
+
+
+
+                                        </div>
+                                        <div class=" col-xs-6 no-padding-right">
+                                            <div class="form-group">
+                                                <label>
+                                                    <span class="icon-help-circled tooltip">
+                                                        <p class="tooltiptext">
+                                                            <span>
+                                                                @PaymentTempalte.Resourse.Paymentpage.Numnbers3
+                                                            </span>
+                                                            <img src="https://maktapp.credit/Content/arabic/images/COmuqHOWwAAZoXX.jpg"
+                                                                 alt="cvv">
+
+                                                        </p>
+                                                    </span>
+                                                    CVV
+                                                </label>
+                                                <div class="input-group">
+                                                    <input class="form-control required checkout-input" id="Cvv2"
+                                                           data-val="true"
+                                                           data-val-required='@MakPayement.Resourse.Paymentpage.CVVMessage' name="Cvv2"
+                                                           placeholder="123" rows="3" type="password"
+                                                           @*@(ViewBag.Test ? "value=123" : "" )*@
+                                                           maxlength="3" pattern="[0-9]3" onkeypress="return isNumber(event)"
+                                                           tabindex=4>
+
+                                                </div>
+                                                <span class="field-validation-valid" data-valmsg-for="Cvv2"
+                                                      data-valmsg-replace="true"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    @if (Model.Isrecurring)
+                                    {
+
+                                        <div class="checkbox">
+                                            <input type="checkbox" id="charge" name="charge" value="" checked disabled>
+
+                                            <label for="charge">
+                                                @PaymentTempalte.Resourse.Paymentpage.Agree
+                                                @Helper.FormatNumber(@Model.PaymentAmount)
+                                                @Model.CurrencyCode
+                                                @PaymentTempalte.Resourse.Paymentpage.Monthly
+                                            </label>
+
+                                            @*<label for="charge"> أوافق على خصم 50 شهريا </label>*@
+                                        </div>
+                                    }
+
+                                </div>
+
+                                @if (ViewBag.Test == true)
+                                {
+                                    
+                                        <button class="checkout-btn testW" id="btnPay" name="btnPay" type="button" onclick="return SuccessPay();" tabindex=5 style="background-image:url(/med/btn/MAKT12.png);">
+                                            @MakPayement.Resourse.Paymentpage.Pay
+
+                                            <span class="main-p">@Helper.FormatNumber(Model.PaymentAmount)</span>
+                                            <span class="currency">@Model.CurrencyCode</span>
+
+                                            <span class="test">
+                                                @MakPayement.Resourse.Paymentpage.Test
+                                            </span>
+
+
+
+                                        </button>
+                                        <button class="checkout-btn" style="display:none" id="gotoBankbtn" name="gotoBankbtn" type="button" onclick="return SuccessPay();">
+                                            <i class="fa fa-credit-card"></i>
+
+                                            @MakPayement.Resourse.Paymentpage.gotoBankPage
+                                        </button>
+                                        <h6 class="notis-im">
+                                            <i class="fa fa-lock"></i>
+
+
+
+
+                                            @MakPayement.Resourse.Paymentpage.Secure
+                                        </h6>
+                                        }
+                                        else
+
+                                        {
+
+                                        <button class="checkout-btn loading" id="btnPay" name="btnPay" type="button" onclick="return PayNow();" tabindex=5>
+                                            <i class="fa fa-credit-card"></i>
+                                            @MakPayement.Resourse.Paymentpage.Pay
+
+                                            <span class="main-p"> @Helper.FormatNumber(Model.PaymentAmount)</span>
+                                            <span class="currency">@Model.CurrencyCode</span>
+
+
+                                        </button>
+
+
+                                        <button class="checkout-btn" style="display:none" id="gotoBankbtn" name="gotoBankbtn" type="button">
+                                            <i class="fa fa-credit-card"></i>
+
+                                            @MakPayement.Resourse.Paymentpage.gotoBankPage
+                                        </button>
+                                        }
+
+
+
+
+
+
+                                        <div class="alert alert-danger payalert" style="display:none">
+
+                                        </div>
+                                </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <footer style="background-image: url(/Content/arabic/images/page.png);">
+            <div class="container"  style="background-image: url(/Content/arabic/images/page.png);">
+                <div class="ask-for-problem text-center">
+                    <a href="#" target="_blank">
+                        <i class="fa fa-video-camera "></i>@MakPayement.Resourse.Paymentpage.Howtopay
+                    </a>
+
+                    <a href="#" data-toggle="modal" data-target="#contact-us-out">
+                        <i class="fa fa-exclamation-circle"></i>
+                        @MakPayement.Resourse.Paymentpage.reportAproblem
+                    </a>
+
+                </div>
+                <div class="row">
+                    <div class="col-md-6 col-md-offset-3">
+                        <div class="Powered-safe-icons">
+                            <a href="https://fatora.io">
+
+                                <img @(Model.Lang == "ar" ? "src=/Content/arabic/images/logo-ar.png" : "src=/Content/arabic/images/logo-en.png") width="50px">
+
+                            </a>
+
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </footer>
+
+        <div class="modal modal-lg fade" id="contact-us-out" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header clearfix">
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                        </button>
+                        <h4 class="modal-title" id="myModalLabel">@MakPayement.Resourse.Paymentpage.reportAproblem</h4>
+                    </div>
+
+                    <div class="modal-body contact-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="box-shadow">
+                                    <p class="contact-message">
+                                        <i class="fa fa-exclamation-circle"></i>
+                                        @MakPayement.Resourse.Paymentpage.prblem
+                                    </p>
+                                    <form id="sendContactEmail">
+                                        <div class="form-group">
+                                            <textarea rows="5" required name="contact" id="contactusMsg" class="form-control contact"></textarea>
+                                        </div>
+                                        <button type="button" class="send-btn" id="sendM" name="sendM" onclick="sendContactEmail();">
+                                            <i class="fa fa-paper-plane" aria-hidden="true"></i>
+                                            @MakPayement.Resourse.Paymentpage.send
+                                        </button>
+                                        <div class="form-group">
+                                            <img src="~/Content/img/40.gif" id="loaderContact" style="display:none" />
+                                            <span id="SendMailMsgLbl" class="text-center" style="font-size:18px;">
+                                            </span>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--Scripts Plugins-->
+
+        <script src="~/Scripts/jquery-1.10.2.js"></script>
+        @Scripts.Render("~/bundles/bootstrap")
+        <script src="~/Content/arabic/vendor/nice-scroll/jquery.nicescroll.min.js"></script>
+        <script src="~/Scripts/Custom.js"></script>
+
+        @*<script src="~/Content/arabic/vendor/nice-scroll/jquery.nicescroll.min.js"></script>*@
+        @*<script src="~/Scripts/Custom.js"></script>*@
+
+
+
+
+
+
+
+
+        @*
+
+            <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+            <script src="vendor/nice-scroll/jquery.nicescroll.min.js"></script>*@
+
+        @*<script src="~/Scripts/jquery.icheck.js"></script>*@
+        <script>
+
+            $('#Card').on('keyup', function (e) {
+                if (e.keyCode != 8) {
+                    var cardValue = $(this).val();
+                    if ((cardValue.length % 4 == 0) && (cardValue.length % 8 != 0) && (cardValue.length % 12 != 0) && (cardValue.length % 16 != 0)) {
+                        //console.log('4');
+                        // console.log(cardValue.length);
+                        cardValue = cardValue + ' ';
+                        $(this).val(cardValue);
+                    }
+                    else if ((cardValue.length % 9 == 0) && (cardValue.length % 2 != 0)) {
+                        //console.log('9');
+                        //console.log(cardValue.length);
+                        cardValue = cardValue + ' ';
+                        $(this).val(cardValue);
+                    }
+                    else if (cardValue.length % 14 == 0) {
+                        //console.log('14');
+                        //console.log(cardValue.length);
+                        cardValue = cardValue + ' ';
+                        $(this).val(cardValue);
+                    }
+                }
+            });
+            $('#Card').on('paste', function (e) {
+                e.preventDefault();
+
+                var text;
+                var clp = (e.originalEvent || e).clipboardData;
+                if (clp === undefined || clp === null) {
+                    text = window.clipboardData.getData("text") || "";
+                    if (text !== "") {
+                        var pasted = text.replace(/\s/g, '');
+                        var test = pasted.substring(0, 4) + ' ' + pasted.substring(4, 8) + ' ' + pasted.substring(8, 12) + ' ' + pasted.substring(12, 16)
+
+                        $(this).val(test);
+                    }
+                } else {
+                    text = clp.getData('text/plain') || "";
+                    if (text !== "") {
+                        var pasted = text.replace(/\s/g, '');
+                        var test = pasted.substring(0, 4) + ' ' + pasted.substring(4, 8) + ' ' + pasted.substring(8, 12) + ' ' + pasted.substring(12, 16)
+
+                        $(this).val(test);
+                    }
+                }
+                //var replaced = pastedData.replace(/\s/g, '');
+            });
+            function validateEmail(email) {
+                var re = /^(([^<>()\[\]\\.,;:\s@@"]+(\.[^<>()\[\]\\.,;:\s@@"]+)*)|(".+"))@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                return re.test(String(email).toLowerCase());
+            }
+            function validateNumber(num, type) {
+                if (type == 1) {
+                    return !isNaN(parseInt(num)) && isFinite(num) && (num.length == 16);
+                }
+                else if (type == 2) {
+                    return !isNaN(parseInt(num)) && isFinite(num) && (num.length == 3);
+                }
+                else if (type == 3) {
+                    return !isNaN(parseInt(num)) && isFinite(num) && (num.length == 4);
+                }
+                else if (type == 4) {
+                    return !isNaN(parseInt(num)) && isFinite(num) && (parseInt(num) >= 1) && (parseInt(num) <= 12);
+                }
+            }
+            function isNumber(evt) {
+                evt = (evt) ? evt : window.event;
+                var charCode = (evt.which) ? evt.which : evt.keyCode;
+                if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+                    return false;
+                }
+                return true;
+            }
+            function validateExpireDate(month, year) {
+
+
+                var d = new Date();
+                var currentyear = d.getFullYear();
+                var currentmonth = d.getMonth() + 1;
+                if ((currentyear == year) && (currentmonth > month))
+                    return false;
+                else if (currentyear > year)
+                    return false;
+                else
+                    return true;
+
+            }
+            function validateForm(form) {
+                var MonthValid = true;
+                var YearValid = true;
+                var dateValid = true;
+                var inputvalid = true;
+                form.find('input[data-val-required]').each(function () {
+                    var input = $(this);
+                    var inputName = input.attr('name');
+                    var span = $('span[data-valmsg-for="' + inputName + '"]');
+                    if (inputName == 'ExpireYear') {
+                        span = $('span[data-valmsg-for="ExpireMonth"]');
+                    }
+
+                    var isvalid = true;
+
+                    if (input.data('type') == 'email') {
+                        isvalid = validateEmail(input.val());
+                    }
+                    if (inputName == 'Card') {
+                        var numValue = input.val().replace(/\s/g, '');
+                        isvalid = validateNumber(numValue, 1);
+                    }
+                    else if (inputName == 'Cvv2') {
+                        isvalid = validateNumber(input.val(), 2);
+                    }
+                    else if (inputName == 'ExpireYear') {
+                        YearValid = validateNumber(input.val(), 3);
+                        isvalid = YearValid;
+
+                    }
+                    else if (inputName == 'ExpireMonth') {
+                        MonthValid = validateNumber(input.val(), 4);
+                        isvalid = MonthValid;
+
+
+                    }
+
+
+                    if (input.val() == '' || !isvalid) {
+
+                        input.removeClass('valid');
+                        input.addClass('input-validation-error');
+                        input.parents('.form-group').addClass('has-error');
+                        span.removeClass('field-validation-valid');
+
+                        span.addClass('text-danger');
+                        span.add('field-validation-error');
+
+
+                        if (inputName == 'ExpireYear') {
+                            span.text('@MakPayement.Resourse.Paymentpage.ExpiryDateMessage');
+                        }
+                        else {
+                            span.text(input.attr('data-val-required'));
+                        }
+
+
+
+                        inputvalid = false;
+
+
+                    }
+
+                    else {
+                        input.addClass('valid');
+                        input.removeClass('input-validation-error');
+
+                        span.addClass('field-validation-valid');
+                        span.removeClass('field-validation-error');
+                        span.text('');
+                        //console.log('validate=true');
+                    }
+                });
+
+
+                if (YearValid && MonthValid) {
+                    dateValid = validateExpireDate(parseInt($('#ExpireMonth').val()), parseInt($('#ExpireYear').val()));
+                    //console.log(inputvalid);
+                    if (!dateValid) {
+                        console.log('1');
+                        var span1 = $('span[data-valmsg-for="ExpireMonth"]');
+                        var input1 = $('#ExpireMonth');
+                        console.log(input1.attr('name'));
+                        input1.removeClass('valid');
+                        input1.addClass('input-validation-error');
+                        input1.parents('.form-group').addClass('has-error');
+                        span1.removeClass('field-validation-valid');
+
+                        span1.addClass('text-danger');
+                        span1.add('field-validation-error');
+
+
+
+                        span1.text('@PaymentTempalte.Resourse.Paymentpage.ExpiryDateMessage2');
+
+                    }
+
+                }
+
+                return inputvalid && dateValid;
+            }
+            function PayNow() {
+                disablebtn($("#btnPay"));
+                if (validateForm($('#checkoutForm'))) {
+                    //SuccessPay();
+
+                }
+                else {
+                    console.log('not valide');
+                    enablebtn($("#btnPay"));
+                }
+
+
+            }
+        function SuccessPay() {
+            disablebtn($("#btnPay"));
+                var forminput = {};
+            forminput["Trackid"] = '@Model.TrackingId';
+            forminput["cvv"] = $('#Cvv2').val();
+                $.ajax({
+                    url: '/Purchase/SuccessPay',
+                    method: 'post',
+                    data: forminput,
+                    dataType: 'json',
+                    success: function (res) {
+
+                        console.log('valid');
+                        if (res.result == 1) {
+                            console.log(res.url);
+                            window.location.href = res.url;
+                            return;
+                        }
+                        
+
+
+                    },
+                    error: function (data) {
+                        console.log('error');
+                        
+                    }
+                });
+            }
+            function sendContactEmail() {
+                var mailMsg = $("#contactusMsg").val();
+                if (mailMsg == null || mailMsg === undefined) {
+                    return null
+                }
+                //disablebtn($("#sendM"));
+                var id =@Model.ID;
+                $.ajax({
+                    url: '/pay/ConatctUs',
+                    method: 'POST',
+                    data: {
+                        paymentID: id,
+                        Message: mailMsg
+                    },
+                    success: function (res) {
+                        if (res.status) {
+                            //Notify(getStringByLang("تم ارسال الرساله شكرا لاختياركم فاتورة", "Message has been sent thanks for chosing Fatora"), '', 'success');
+                            successContact();
+                        }
+                    },
+                    error: function (err) {
+                        //  console.log(err)
+                        $('#SendMailMsgLbl').addClass("text-danger");
+                    },
+                    beforeSend: function (xhr) {
+                        $('#loaderContact').show();
+                    },
+                    complete: function (xhr) {
+                        // remove loasder
+                        $("#contact-us").modal('hide');
+
+                        $('#loaderContact').hide();
+
+                    }
+
+                });
+            }
+            function successContact() {
+                $('.contact-message').html('@PaymentTempalte.Resourse.Paymentpage.sendProblem');
+                $('#sendContactEmail').hide();
+            }
+            $(document).ready(function () {
+                // Nice Scroll to HTML
+                $("html").niceScroll({
+                    autohidemode: false,
+                    cursorcolor: '#ccc',
+                    cursorwidth: 8,
+                    cursorborder: 'none',
+                    cursorborderradius: "5px",
+                    zindex: 999
+                });
+                $(".years-list").niceScroll({
+                    autohidemode: false,
+                    cursorcolor: '#ccc',
+                    cursorwidth: 8,
+                    cursorborder: 'none',
+                    cursorborderradius: "5px",
+                    zindex: "auto"
+                });
+                $(".months-list").niceScroll({
+                    autohidemode: false,
+                    cursorcolor: '#ccc',
+                    cursorwidth: 8,
+                    cursorborder: 'none',
+                    cursorborderradius: "5px",
+                    zindex: "auto"
+                });
+
+
+
+
+                $(".years-list").on('click', 'li', function () {
+                    var itemValue = $(this).text();
+                    $("#ExpireYear").val(itemValue);
+                    $(this).addClass("selected").siblings().removeClass("selected");
+                    $(this).parent().removeClass("shown");
+                });
+                // click to show the year list
+                $("#ExpireYear").focusin(function () {
+                    $(this).parent().siblings(".years-list").addClass("shown");
+                    $(this).parent().siblings(".years-list").find('li').removeClass("selected");
+
+                });
+                $("#ExpireYear").focusout(function () {
+                    if ($(".years-list li").hasClass("selected")) {
+                        var itemValue2 = $(".years-list").children("li.selected").text();
+                        $(this).val(itemValue2);
+                    }
+                    setTimeout(function () {
+                        $("#ExpireYear").parent().siblings(".years-list").removeClass("shown");
+                    },
+                        200
+                    );
+                });
+                // month
+                $(".months-list").on('click', 'li', function () {
+                    var itemValue = $(this).text();
+                    $("#ExpireMonth").val(itemValue);
+                    $(this).addClass("selected").siblings().removeClass("selected");
+                    $(this).parent().removeClass("shown");
+                });
+                // click to show the year list
+                $("#ExpireMonth").focusin(function () {
+                    $(this).parent().siblings(".months-list").addClass("shown");
+                    $(this).parent().siblings(".months-list").find('li').removeClass("selected");
+
+                });
+                $("#ExpireMonth").focusout(function () {
+                    if ($(".months-list li").hasClass("selected")) {
+                        var itemValue2 = $(".months-list").children("li.selected").text();
+                        $(this).val(itemValue2);
+                    }
+                    setTimeout(function () {
+                        $("#ExpireMonth").parent().siblings(".months-list").removeClass("shown");
+                    },
+                        200
+                    );
+                });
+
+                /* Radio function */
+                $(".radio").on("click", function () {
+                    if ($("#radio-1").is(':checked')) {
+                        $(".hide-this").css("display", "block");
+                        $(".debit-card-desc").css("display", "none");
+                        $("#btnPay").css("display", "block");
+                        $("#gotoBankbtn").css("display", "none");
+
+                    } else if ($("#radio-2").is(':checked')) {
+                        $(".hide-this").css("display", "none");
+                        $(".debit-card-desc").css("display", "block");
+
+                        $("#gotoBankbtn").css("display", "block");
+                        $("#btnPay").css("display", "none");
+                    }
+                });
+            });
+        </script>
+</body>
+
+</html>
+
+
+
